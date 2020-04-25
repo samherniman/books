@@ -1,0 +1,140 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+libraries
+```{r}
+library(dplyr)
+library(purrr)
+# purrr::reduce(list_of_dfs, full_join, by = "id_column_name")
+```
+
+functions
+```{r}
+
+# makes a list of all the column names in a given list of tables
+list_names <- function(x) {
+  vroom::vroom(x) %>%
+    names()
+}
+
+# combine out files (may work on other things, but is currently untested); x is the list of csv
+read_and_bind <- function(x, names_df) {
+  
+  # makes 4 digit year from file name
+  year <- x %>% # extract the year
+    stringr::str_extract_all("\\d{2}", simplify = TRUE)
+  year <- ifelse(dplyr::last(year) >= 89, # make the year four digits
+                 stringr::str_c("19", dplyr::last(year)),
+                 stringr::str_c("20", dplyr::last(year))
+  )
+
+  # read in the csv
+  x <- vroom::vroom(x)
+  
+  # replace the year with 4 digit year
+  x$year <- dplyr::last(year)
+
+  # take the column names list and make column names of df
+  y <- data.frame(matrix("", ncol = length(names_df), nrow = 0)) # empty df with the # of columns as the names files
+  colnames(y) <- names_df # assigns the col names from the names file
+  
+  y <- y %>% 
+    mutate_all(., as.factor) # make the input df into a factor
+  
+  x <- x %>% 
+    mutate_all(., as.factor) # assure the joining csv's are factors
+
+  # bind the csv's to the df with assigned column names
+  y <- bind_rows(y, x) %>%
+    mutate_all(., as.factor) # join csv's to the empty df
+
+} # end function
+```
+
+Find and combine "out" files
+```{r}
+
+# finds all files with "out" in the name
+out_csv <- fs::dir_ls("/Users/zoedavis/Documents/GitHub/books/data",
+                      regexp = ".*(o|O)(ut|UT).*csv"
+)
+
+# find all the column names for out files
+out_csv_names <- out_csv %>%
+  map(
+  ~list_names(.)
+  ) %>%
+  unlist %>%
+  unique()
+
+out_csv_names[73] <- "year"
+
+# combine out files
+out_df <- out_csv %>%
+  map(
+    function(x) read_and_bind(x = x, names_df = out_csv_names)) %>%
+  bind_rows()
+
+
+
+```
+
+Find and combine "pld" files
+```{r}
+
+# finds all files with "pld" in name
+pld_csv <- fs::dir_ls("/Users/zoedavis/Documents/GitHub/books/data",
+  regexp = ".*(pld|PLD|AE).*csv"
+)
+
+# find all the column names for pld files
+pld_csv_names <- pld_csv %>%
+  map(
+  ~list_names(.)
+  ) %>%
+  unlist %>%
+  unique()
+
+pld_csv_names[27] <- "year"
+
+# combine pld files
+pld_df <- pld_csv %>%
+  map(
+    function(x) read_and_bind(x = x, names_df = pld_csv_names)
+  ) %>%
+  bind_rows()
+
+
+```
+
+Find and combine "state" files
+```{r}
+# finds all files with "slate" in name
+state_csv <- fs::dir_ls("/Users/zoedavis/Documents/GitHub/books/data",
+  regexp = ".*((S|s)tate|sum|SUM).*csv"
+)
+
+# find all the column names for slate files
+state_csv_names <- state_csv %>%
+  map(
+  ~list_names(.)
+  ) %>%
+  unlist %>%
+  unique()
+
+state_csv_names[27] <- "year"
+
+# combine slate files
+state_df <- state_csv %>%
+  map(
+    function(x) read_and_bind(x = x, names_df = state_csv_names)
+  ) %>%
+  bind_rows()
+
+
+```
+
