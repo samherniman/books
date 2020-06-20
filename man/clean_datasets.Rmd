@@ -1,0 +1,15 @@
+---
+title: "clean datasets"
+output: html_notebook
+---
+
+```{r}
+out_df <- out_df %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    # long = parzer::parse_lon(longitud),
+    # lat = parzer::parse_lat(latitude)
+  )
+```
+
+

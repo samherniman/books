@@ -1,0 +1,35 @@
+---
+title: "Read tables in"
+author: "Zoe Davis and Sam Herniman"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Read tables in}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+```{r}
+library(magrittr)
+library(purrr)
+library(dplyr)
+library(vroom)
+```
+
+
+```{r}
+out_df <- bk_read_out(here::here("data", "raw_data"))
+```
+```{r}
+pld_df <- bk_read_pld(here::here("data", "raw_data"))
+```
+```{r}
+state_df <- bk_read_state(here::here("data", "raw_data"))
+```
+
