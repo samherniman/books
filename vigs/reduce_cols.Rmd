@@ -1,0 +1,45 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+out_df$f_bkmob %>% first(na.omit(.))
+out_df$l_num_bm %>% first(na.omit(.))
+# out_df$fipsst %>% first(na.omit(.))
+```
+
+```{r}
+out_df2 <- 
+out_df %>% 
+  mutate(
+    lib_name = coalesce(libname, lib_name),
+    lib_city = coalesce(city, lib_city),
+    lib_address = coalesce(address, lib_addr),
+    lib_zip = coalesce(zip, lib_zip),
+    lib_zip4 = coalesce(zip4, lib_zip4),
+    lib_phone = coalesce(phone, lib_phone),
+    lib_county = coalesce(cnty, lib_cnty),
+    c_out_ty = coalesce(c_out_ty, c_out_typ),
+    web_address = coalesce(web_addr, web_adr),
+    fips_county = coalesce(cntyfips, fipsco),
+    fips_state = coalesce(pub_fips, fipsst),
+  ) %>% 
+  dplyr::select(-c(
+    libname, city, address, lib_addr, zip, zip4, phone,
+    cnty, lib_cnty, c_out_typ, web_addr, web_adr, cntyfips, fipsco, pub_fips, fipsst
+  ),
+  fips_place = fipsplac,
+  gnis_place = gnisplac,
+  obe_region = obereg
+  )
+
+```
+```{r}
+out_df2[,order(colnames(out_df2))] %>% glimpse()
+# out_df2 %>% glimpse()
+out_df2[,order(colnames(out_df2))] %>% skimr::skim()
+```
+
+
+

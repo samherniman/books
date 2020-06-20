@@ -24,7 +24,9 @@ library(vroom)
 
 
 ```{r}
-out_df <- bk_read_out(here::here("data", "raw_data"))
+out_df <- bk_read_out(here::here("data", "raw_data")) %>% 
+  janitor::clean_names()
+
 ```
 ```{r}
 pld_df <- bk_read_pld(here::here("data", "raw_data"))
