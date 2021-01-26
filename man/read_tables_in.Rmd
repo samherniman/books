@@ -23,15 +23,24 @@ library(vroom)
 ```
 
 
-```{r}
-out_df <- bk_read_out(here::here("data", "raw_data")) %>% 
-  janitor::clean_names()
+```{r message=FALSE}
+out_df <- bk_read_out(here::here("data", "raw_data")) %>%
+  bk_clean_out()
 
 ```
-```{r}
-pld_df <- bk_read_pld(here::here("data", "raw_data"))
+```{r message=FALSE}
+pld_df <- bk_read_pld(here::here("data", "raw_data")) %>% 
+  janitor::clean_names()
 ```
 ```{r}
 state_df <- bk_read_state(here::here("data", "raw_data"))
 ```
+```{r}
+vroom::vroom_write(
+  out_df, 
+  path = here::here("data", "derived_data", "out_df.csv"),
+  delim = ","
+  )
+```
+
 

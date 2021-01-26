@@ -2,6 +2,9 @@
 title: "clean datasets"
 output: html_notebook
 ---
+```{r}
+library(tidygeocoder)
+```
 
 ```{r}
 out_df <- out_df %>% 
@@ -10,6 +13,22 @@ out_df <- out_df %>%
     # long = parzer::parse_lon(longitud),
     # lat = parzer::parse_lat(latitude)
   )
+
+# geocode the addresses
+lat_longs <- out_df2 %>%
+  slice_sample(n=100) %>%
+  geocode(
+    address = address_cat, 
+    cascade_order = c("census", "osm"),
+    lat = latitude_geo , 
+    long = longitude_geo,
+    verbose = TRUE,
+    # mode = 'single'
+    # batch_limit = 1000
+    )
+
+
+# last(skimr::skim(lat_longs)$n_missing)
 ```
 
 
